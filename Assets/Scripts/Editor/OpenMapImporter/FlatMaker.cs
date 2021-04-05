@@ -29,40 +29,57 @@ using UnityEngine;
 /// </summary>
 internal sealed class FlatMaker : BaseInfrastructureMaker
 {
-    
-    private Material grass;
+
+   // Material _grass = Resources.Load("Grass", typeof(Material)) as Material;
+   // Material _sand = Resources.Load("Sand", typeof(Material)) as Material;
+   // Material _water = Resources.Load("Water", typeof(Material)) as Material;
+    public Material Material;
+
     public override int NodeCount
     
     {
         get
         {
-            return map.ways.FindAll((w) => { return w.IsGrass && w.NodeIDs.Count > 1;}).Count;
+            return map.ways.FindAll((w) => { return w.IsFlat && w.NodeIDs.Count > 1;}).Count;
         }
     }
 
 
-
-    public FlatMaker(MapReader mapReader, Material material)
+    public FlatMaker(MapReader mapReader)
         : base(mapReader)
-    {
-        grass = material;
-    }
-
+    {}
 
     public override IEnumerable<int> Process()
     {
         int count = 0;
 
         
-        // Iterate through all the buildings in the 'ways' list
-        foreach (var Grass in map.ways.FindAll((w) => { return w.IsGrass && w.NodeIDs.Count > 1; }))
+        // Iterate through all the flat objects in the 'ways' list
+        foreach (var way in map.ways.FindAll((w) => { return w.IsFlat && w.NodeIDs.Count > 1; }))
         {
             // Create the object
-            CreateObject(Grass, grass, "Building");
+            //Material = way._material;
+            CreateObject(way, Material, way.Name);
 
             count++;
             yield return count;
-        }  
+        } 
+             //   foreach (var Sand in map.ways.FindAll((w) => { return w.IsSand && w.NodeIDs.Count > 1; }))
+        //{
+            // Create the object
+          //  CreateObject(Sand, _sand, "Sand");
+
+            //count++;
+          //  yield return count;
+        //}   
+          //foreach (var Sand in map.ways.FindAll((w) => { return w.IsWater && w.NodeIDs.Count > 1; }))
+        //{
+            // Create the object
+          //  CreateObject(Sand, _water, "Water");
+
+            //count++;
+          //  yield return count;
+        //}   
     }
 
     /// <summary>

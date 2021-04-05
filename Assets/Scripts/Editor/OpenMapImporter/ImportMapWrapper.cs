@@ -54,15 +54,15 @@ internal sealed class ImportMapWrapper
         var mapReader = new MapReader();
         mapReader.Read(_mapFile);
 
-        var buildingMaker = new BuildingMaker(mapReader, _buildingMaterial);
+        var buildingMaker = new BuildingMaker(mapReader);
         var roadMaker = new RoadMaker(mapReader, _roadMaterial);
-        var FlatMaker = new FlatMaker(mapReader, _grass);
-        var WaterMaker = new WaterMaker(mapReader, _water);
+        var FlatMaker = new FlatMaker(mapReader);
+        //var WaterMaker = new WaterMaker(mapReader, _water);
 
         Process(buildingMaker, "Importing buildings");
         Process(roadMaker, "Importing roads");
-        Process(FlatMaker, "Importing Grass");
-        Process(WaterMaker, "Importing Water");
+        Process(FlatMaker, "Importing Flat things");
+        //Process(WaterMaker, "Importing Water");
     }
 
     private void Process(BaseInfrastructureMaker maker, string progressText)

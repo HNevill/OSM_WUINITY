@@ -26,6 +26,9 @@ using UnityEngine;
 internal sealed class RoadMaker : BaseInfrastructureMaker
 {
     public Material roadMaterial;
+    public List<GameObject> combinedRoad = new List<GameObject>();
+    public List<GameObject> allRoads = new List<GameObject>();
+
 
     public override int NodeCount
     {
@@ -50,6 +53,7 @@ internal sealed class RoadMaker : BaseInfrastructureMaker
         foreach (var way in map.ways.FindAll((w) => { return w.IsRoad; }))
         {
             CreateObject(way, roadMaterial, way.Name);
+            //go.transform.parent = gameObject.transform;
 
             count++;
             yield return count;

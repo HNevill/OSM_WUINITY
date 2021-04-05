@@ -83,16 +83,30 @@ class OsmWay : BaseOsm
     /// </summary>
     public bool IsWater { get; private set; }
 
-    /// <summary>
+           /// <summary>
+    /// True if the way is a grass.
+    /// </summary>
+    public bool IsSand { get; private set; }
+
+
+    public bool IsFlat { get; private set; }
+    public bool IsAmenity { get; private set; }
+    public bool Walkable { get; private set; }
+    public Material _material;
+
+    //public Material _material {get;}
     /// Constructor.
     /// </summary>
     /// <param name="node"></param>
     public OsmWay(XmlNode node)
     {
+        
+
         NodeIDs = new List<ulong>();
         Height = 3.0f; // Default height for structures is 1 story (approx. 3m)
         Lanes = 1;      // Number of lanes either side of the divide 
         Name = "";
+        Walkable = true;
 
         // Get the data from the attributes
         ID = GetAttribute<ulong>("id", node.Attributes);
@@ -106,6 +120,7 @@ class OsmWay : BaseOsm
             NodeIDs.Add(refNo);
         }
 
+        //if it is a boundary
         if (NodeIDs.Count > 1)
         {
             IsBoundary = NodeIDs[0] == NodeIDs[NodeIDs.Count - 1];
@@ -129,7 +144,14 @@ class OsmWay : BaseOsm
             else if (key == "building")
             {
                 IsBuilding = true; // GetAttribute<string>("v", t.Attributes) == "yes";
+                Walkable = false;
             }
+            else if (key == "amenity")
+            {
+                IsAmenity = true; // GetAttribute<string>("v", t.Attributes) == "yes";
+                Walkable = false;
+            }
+
             else if (key == "highway")
             {
                 IsRoad = true;
@@ -138,18 +160,28 @@ class OsmWay : BaseOsm
             {
                 Lanes = GetAttribute<int>("v", t.Attributes);
             }
-            else if (value =="name")
+            else if (key =="name")
             {
                 Name = GetAttribute<string>("v", t.Attributes);
                 
             }
-             else if ( key =="landuse" && value == "grass")
+             else if ( key =="landuse" && value == "grass" | value == "protected_area" )
             {
                 IsGrass = true;
+                IsFlat = true;
+                // without this line of code this script works fine
+                 _material = Resources.Load("Grass", typeof(Material)) as Material;
             }
-            else if ( key == "water")
+            else if ( value == "water" )
             {
                 IsWater = true;
+                 _material = Resources.Load("Water", typeof(Material)) as Material;
+            }
+             else if ( value == "sand")
+            {
+                IsSand = true;
+                IsFlat = true;
+                _material = Resources.Load("Sand", typeof(Material)) as Material;
             }
         }
     }

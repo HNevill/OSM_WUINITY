@@ -92,7 +92,7 @@ class OsmWay : BaseOsm
     public bool IsFlat { get; private set; }
     public bool IsAmenity { get; private set; }
     public bool Walkable { get; private set; }
-    public Material _material;
+    //public Material _material;
 
     //public Material _material {get;}
     /// Constructor.
@@ -170,18 +170,18 @@ class OsmWay : BaseOsm
                 IsGrass = true;
                 IsFlat = true;
                 // without this line of code this script works fine
-                 _material = Resources.Load("Grass", typeof(Material)) as Material;
+                // _material = Resources.Load("Grass", typeof(Material)) as Material;
             }
             else if ( value == "water" )
             {
                 IsWater = true;
-                 _material = Resources.Load("Water", typeof(Material)) as Material;
+                 //_material = Resources.Load("Water", typeof(Material)) as Material;
             }
              else if ( value == "sand")
             {
                 IsSand = true;
                 IsFlat = true;
-                _material = Resources.Load("Sand", typeof(Material)) as Material;
+                //_material = Resources.Load("Sand", typeof(Material)) as Material;
             }
         }
     }

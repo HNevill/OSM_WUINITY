@@ -30,9 +30,9 @@ using UnityEngine;
 internal sealed class FlatMaker : BaseInfrastructureMaker
 {
 
-   // Material _grass = Resources.Load("Grass", typeof(Material)) as Material;
-   // Material _sand = Resources.Load("Sand", typeof(Material)) as Material;
-   // Material _water = Resources.Load("Water", typeof(Material)) as Material;
+    Material _grass = Resources.Load("Grass", typeof(Material)) as Material;
+   Material _sand = Resources.Load("Sand", typeof(Material)) as Material;
+    Material _water = Resources.Load("Water", typeof(Material)) as Material;
     public Material Material;
 
     public override int NodeCount
@@ -55,31 +55,31 @@ internal sealed class FlatMaker : BaseInfrastructureMaker
 
         
         // Iterate through all the flat objects in the 'ways' list
-        foreach (var way in map.ways.FindAll((w) => { return w.IsFlat && w.NodeIDs.Count > 1; }))
-        {
+        //foreach (var way in map.ways.FindAll((w) => { return w.IsFlat && w.NodeIDs.Count > 1; }))
+        //{
             // Create the object
             //Material = way._material;
-            CreateObject(way, Material, way.Name);
+            //CreateObject(way, Material, way.Name);
+
+            //count++;
+            //yield return count;
+        //} 
+                foreach (var Sand in map.ways.FindAll((w) => { return w.IsSand && w.NodeIDs.Count > 1; }))
+        {
+             //Create the object
+            CreateObject(Sand, _sand, "Sand");
 
             count++;
             yield return count;
-        } 
-             //   foreach (var Sand in map.ways.FindAll((w) => { return w.IsSand && w.NodeIDs.Count > 1; }))
-        //{
-            // Create the object
-          //  CreateObject(Sand, _sand, "Sand");
+        }   
+          foreach (var Sand in map.ways.FindAll((w) => { return w.IsWater && w.NodeIDs.Count > 1; }))
+        {
+            //Create the object
+            CreateObject(Sand, _water, "Water");
 
-            //count++;
-          //  yield return count;
-        //}   
-          //foreach (var Sand in map.ways.FindAll((w) => { return w.IsWater && w.NodeIDs.Count > 1; }))
-        //{
-            // Create the object
-          //  CreateObject(Sand, _water, "Water");
-
-            //count++;
-          //  yield return count;
-        //}   
+            count++;
+            yield return count;
+        }   
     }
 
     /// <summary>

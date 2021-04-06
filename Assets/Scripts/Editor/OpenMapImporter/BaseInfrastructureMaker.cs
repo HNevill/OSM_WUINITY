@@ -36,6 +36,10 @@ internal abstract class BaseInfrastructureMaker
     /// </summary>
     public abstract int NodeCount { get; }
 
+    Transform walkable = ImportMapWrapper._walkable;
+    Transform obstacle = ImportMapWrapper._obstacles;
+
+
     /// <summary>
     /// Awaken this instance!!!
     /// </summary>
@@ -73,7 +77,7 @@ internal abstract class BaseInfrastructureMaker
     /// <param name="way">OsmWay instance</param>
     /// <param name="mat">Material to apply to the instance</param>
     /// <param name="objectName">The name of the object (building name, road etc.)</param>
-    protected void CreateObject(OsmWay way, Material mat, string objectName)
+    protected void CreateObject(OsmWay way, Material mat, string objectName, bool IsWalk)
     {
         // Make sure we have some name to display
         objectName = string.IsNullOrEmpty(objectName) ? "OsmWay" : objectName;
@@ -82,6 +86,14 @@ internal abstract class BaseInfrastructureMaker
         GameObject go = new GameObject(objectName);
         Vector3 localOrigin = GetCentre(way);
         go.transform.position = localOrigin - map.bounds.Centre;
+        if (IsWalk == true)
+            {
+            go.transform.SetParent(walkable);
+            }
+        else
+        {
+            go.transform.SetParent(obstacle);
+             }
 
         // Add the mesh filter and renderer components to the object
         MeshFilter mf = go.AddComponent<MeshFilter>();

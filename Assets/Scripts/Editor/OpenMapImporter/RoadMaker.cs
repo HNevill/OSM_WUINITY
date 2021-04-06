@@ -1,33 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    Copyright (c) 2017 Sloan Kelly
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-*/
-
 /// <summary>
 /// Road infrastructure maker.
 /// </summary>
 internal sealed class RoadMaker : BaseInfrastructureMaker
 {
-    public Material roadMaterial;
-    public List<GameObject> combinedRoad = new List<GameObject>();
-    public List<GameObject> allRoads = new List<GameObject>();
+    private Material roadMaterial;
+    //public List<GameObject> combinedRoad = new List<GameObject>();
+    //public List<GameObject> allRoads = new List<GameObject>();
+    private Vector3 fin1;
+    private Vector3 fin2;
 
 
     public override int NodeCount
@@ -52,7 +35,7 @@ internal sealed class RoadMaker : BaseInfrastructureMaker
         // Iterate through the roads and build each one
         foreach (var way in map.ways.FindAll((w) => { return w.IsRoad; }))
         {
-            CreateObject(way, roadMaterial, way.Name);
+            CreateObject(way, roadMaterial, way.Name, way.IsWalk);
             //go.transform.parent = gameObject.transform;
 
             count++;
@@ -60,32 +43,57 @@ internal sealed class RoadMaker : BaseInfrastructureMaker
         }
     }
 
+
     protected override void OnObjectCreated(OsmWay way, Vector3 origin, List<Vector3> vectors, List<Vector3> normals, List<Vector2> uvs, List<int> indices)
     {
-        for (int i = 1; i < way.NodeIDs.Count; i++)
+        //finding the initial values
+        Vector3 h1 = map.nodes[way.NodeIDs[0]] - origin;
+        Vector3 h2 = map.nodes[way.NodeIDs[1]] - origin;
+
+
+        Vector3 idiff1 = (h2 - h1).normalized;
+        var icross = Vector3.Cross(idiff1, Vector3.up) * 3.7f * way.Lanes;
+        Vector3 start1 = h1 + icross;
+        Vector3 start2 = h1 - icross;
+
+        //creating the internal nodes
+        for (int i = 2; i < way.NodeIDs.Count; i++)
         {
-            OsmNode p1 = map.nodes[way.NodeIDs[i - 1]];
-            OsmNode p2 = map.nodes[way.NodeIDs[i]];
+            OsmNode p1 = map.nodes[way.NodeIDs[i - 2]];
+            OsmNode p2 = map.nodes[way.NodeIDs[i - 1]];
+            OsmNode p3 = map.nodes[way.NodeIDs[i]];
 
             Vector3 s1 = p1 - origin;
             Vector3 s2 = p2 - origin;
+            Vector3 s3 = p3 - origin;
 
-            Vector3 diff = (s2 - s1).normalized;
+            Vector3 diff1 = (s2 - s1).normalized;
+            Vector3 diff2 = (s3 - s2).normalized;
 
             // https://en.wikipedia.org/wiki/Lane
             // According to the article, it's 3.7m in Canada
-            var cross = Vector3.Cross(diff, Vector3.up) * 3.7f * way.Lanes;
+            var cross1 = Vector3.Cross(diff1, Vector3.up) * 3.7f * way.Lanes;
+            var cross2 = Vector3.Cross(diff2, Vector3.up) * 3.7f * way.Lanes;
 
             // Create points that represent the width of the road
-            Vector3 v1 = s1 + cross;
-            Vector3 v2 = s1 - cross;
-            Vector3 v3 = s2 + cross;
-            Vector3 v4 = s2 - cross;
+            Vector3 v1 = s1 + cross1;
+            Vector3 v2a = s2 + cross1;
+            Vector3 v2b = s2 + cross2;
+            Vector3 v3 = s3 + cross2;
 
-            vectors.Add(v1);
+            Vector3 v4 = s1 - cross1;
+            Vector3 v5a = s2 - cross1;
+            Vector3 v5b = s2 - cross2; 
+            Vector3 v6 = s3 - cross2;
+            
+
+            Vector3 v2 = Intersection(v1, v2a, v2b, v3);
+            Vector3 v5 = Intersection(v4, v5a, v5b, v6);
+
+            vectors.Add(start1);
+            vectors.Add(start2);
             vectors.Add(v2);
-            vectors.Add(v3);
-            vectors.Add(v4);
+            vectors.Add(v5);
 
             uvs.Add(new Vector2(0, 0));
             uvs.Add(new Vector2(1, 0));
@@ -112,6 +120,64 @@ internal sealed class RoadMaker : BaseInfrastructureMaker
             indices.Add(idx3);
             indices.Add(idx4);
             indices.Add(idx2);
+
+            // set the starting position for the next bit of road so that I can create the last segment of mesh.
+            start1 = v2;
+            start2 = v5;
+            fin1 = v3;
+            fin2 = v6;
         }
+
+        //Final node
+        vectors.Add(start1);
+        vectors.Add(start2);
+        vectors.Add(fin1);
+        vectors.Add(fin2);
+
+        uvs.Add(new Vector2(0, 0));
+        uvs.Add(new Vector2(1, 0));
+        uvs.Add(new Vector2(0, 1));
+        uvs.Add(new Vector2(1, 1));
+
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+        normals.Add(Vector3.up);
+
+        int eidx1, eidx2, eidx3, eidx4;
+        eidx4 = vectors.Count - 1;
+        eidx3 = vectors.Count - 2;
+        eidx2 = vectors.Count - 3;
+        eidx1 = vectors.Count - 4;
+
+        //first triangle 
+        indices.Add(eidx1);
+        indices.Add(eidx3);
+        indices.Add(eidx2);
+
+        //second triangle 
+        indices.Add(eidx3);
+        indices.Add(eidx4);
+        indices.Add(eidx2);
+
     }
+
+    public Vector3 Intersection( Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
+    {
+        Vector3 sect = new Vector3();
+
+        float Grad1 = (p2.z - p1.z) / (p2.x - p1.x);
+        float Grad2 = (p4.z - p3.z) / (p4.x - p3.x);
+
+        float c1 = p1.z - Grad1 * p1.x;
+        float c2 = p3.z - Grad2 * p3.x;
+
+        sect.x = (c2 - c1) / (Grad1 - Grad2);
+        sect.y = 0;
+        sect.z = Grad1 * sect.x + c1;
+        return sect;
+
+    }
+
+
 }

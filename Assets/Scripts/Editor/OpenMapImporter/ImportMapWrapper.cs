@@ -30,7 +30,9 @@ internal sealed class ImportMapWrapper
     private Material _buildingMaterial;
     private Material _grass;
     private Material _water;
-    
+    public  static Transform _obstacles;
+    public static Transform _walkable;
+
     public ImportMapWrapper(ImportMapDataEditorWindow window, string mapFile, Material roadMaterial,  Material buildingMaterial, 
     Material grass , Material water)
                             
@@ -53,6 +55,11 @@ internal sealed class ImportMapWrapper
         
         var mapReader = new MapReader();
         mapReader.Read(_mapFile);
+
+        GameObject Walkable = new GameObject("Walkable Land");
+        GameObject Obstacles = new GameObject("Obstacles");
+        _obstacles = Obstacles.transform;
+        _walkable = Walkable.transform;
 
         var buildingMaker = new BuildingMaker(mapReader);
         var roadMaker = new RoadMaker(mapReader, _roadMaterial);

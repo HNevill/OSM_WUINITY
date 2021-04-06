@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
+using UnityEngine;
 
 /*
     Copyright (c) 2017 Sloan Kelly
@@ -83,7 +84,12 @@ class OsmWay : BaseOsm
     /// </summary>
     public bool IsWater { get; private set; }
 
-           /// <summary>
+    /// <summary>
+    /// True if the way is a grass.
+    /// </summary>
+    public bool Is3D { get; private set; }
+
+    /// <summary>
     /// True if the way is a grass.
     /// </summary>
     public bool IsSand { get; private set; }
@@ -91,10 +97,10 @@ class OsmWay : BaseOsm
 
     public bool IsFlat { get; private set; }
     public bool IsAmenity { get; private set; }
-    public bool Walkable { get; private set; }
+    public bool IsWalk { get; private set; }
     //public Material _material;
 
-    //public Material _material {get;}
+    public Material _material {get; private set;}
     /// Constructor.
     /// </summary>
     /// <param name="node"></param>
@@ -106,7 +112,7 @@ class OsmWay : BaseOsm
         Height = 3.0f; // Default height for structures is 1 story (approx. 3m)
         Lanes = 1;      // Number of lanes either side of the divide 
         Name = "";
-        Walkable = true;
+        IsWalk = true;
 
         // Get the data from the attributes
         ID = GetAttribute<ulong>("id", node.Attributes);
@@ -144,12 +150,17 @@ class OsmWay : BaseOsm
             else if (key == "building")
             {
                 IsBuilding = true; // GetAttribute<string>("v", t.Attributes) == "yes";
-                Walkable = false;
+                IsWalk = false;
+                _material = Resources.Load("Brick", typeof(Material)) as Material;
+                Is3D = true;
+                
             }
             else if (key == "amenity")
             {
                 IsAmenity = true; // GetAttribute<string>("v", t.Attributes) == "yes";
-                Walkable = false;
+                IsWalk = false;
+                _material = Resources.Load("Amenity", typeof(Material)) as Material;
+                Is3D = true;
             }
 
             else if (key == "highway")
@@ -169,19 +180,19 @@ class OsmWay : BaseOsm
             {
                 IsGrass = true;
                 IsFlat = true;
-                // without this line of code this script works fine
-                // _material = Resources.Load("Grass", typeof(Material)) as Material;
+                 _material = Resources.Load("Grass", typeof(Material)) as Material;
             }
             else if ( value == "water" )
             {
                 IsWater = true;
-                 //_material = Resources.Load("Water", typeof(Material)) as Material;
+                _material = Resources.Load("Water", typeof(Material)) as Material;
+                IsWalk = false;
             }
              else if ( value == "sand")
             {
                 IsSand = true;
                 IsFlat = true;
-                //_material = Resources.Load("Sand", typeof(Material)) as Material;
+                _material = Resources.Load("Sand", typeof(Material)) as Material;
             }
         }
     }

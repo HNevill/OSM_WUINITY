@@ -26,8 +26,6 @@ using UnityEngine;
 /// </summary>
 internal sealed class BuildingMaker : BaseInfrastructureMaker
 {
-    Material _building = Resources.Load("Brick", typeof(Material)) as Material;
-    Material _amenity = Resources.Load("Amenity", typeof(Material)) as Material;
 
     public override int NodeCount
     {
@@ -50,19 +48,10 @@ internal sealed class BuildingMaker : BaseInfrastructureMaker
         int count = 0;
 
         // Iterate through all the buildings in the 'ways' list
-        foreach (var way in map.ways.FindAll((w) => { return w.IsBuilding && w.NodeIDs.Count > 1; }))
+        foreach (var way in map.ways.FindAll((w) => { return w.Is3D && w.NodeIDs.Count > 1; }))
         {
             // Create the object
-            CreateObject(way, _building, "Building");
-
-            count++;
-            yield return count;
-        }
-
-         foreach (var way in map.ways.FindAll((w) => { return w.IsAmenity && w.NodeIDs.Count > 1; }))
-        {
-            // Create the object
-            CreateObject(way, _amenity, way.Name );
+            CreateObject(way, way._material, "Building", way.IsWalk);
 
             count++;
             yield return count;
@@ -87,6 +76,7 @@ internal sealed class BuildingMaker : BaseInfrastructureMaker
         vectors.Add(oTop);
         normals.Add(Vector3.up);
         uvs.Add(new Vector2(0.5f, 0.5f));
+        
 
         for (int i = 1; i < way.NodeIDs.Count; i++)
         {

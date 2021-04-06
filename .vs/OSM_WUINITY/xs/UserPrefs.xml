@@ -1,0 +1,35 @@
+﻿<Properties StartupConfiguration="{AFA5F89B-3815-6497-18BE-AB48497DD6DA}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Editor/OpenMapImporter/RoadMaker.cs">
+    <Files>
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/MapReader.cs" Line="47" Column="35" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/FlatMaker.cs" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/BaseInfrastructureMaker.cs" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/Serialization/OsmWay.cs" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/ImportMapWrapper.cs" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/BuildingMaker.cs" Line="73" Column="54" />
+      <File FileName="Assets/Scripts/Editor/OpenMapImporter/RoadMaker.cs" Line="69" Column="29" />
+      <File FileName="Assets/Scripts/Evac Scripts/InstantiationExample.cs" />
+      <File FileName="Assets/Scripts/Evac Scripts/SetDestination.cs" />
+      <File FileName="Assets/Scripts/Evac Scripts/Test.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="OSM_WUINITY" expanded="True" />
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Unity" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="6b3f09b0-ce3a-445f-bdd6-ea9f2c5c09af" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
